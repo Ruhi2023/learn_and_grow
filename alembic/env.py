@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from backend.utils.api_utils import Credentials_helper
+from backend.utils.cred_utils import Credentials_helper
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from backend.database.models import Base

@@ -4,6 +4,15 @@ from .database_main import Base
 from sqlalchemy.types import TIMESTAMP, BINARY
 from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Text
 from sqlalchemy.sql.expression import text
+from .database_main import SessionLocal
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 # Tables i will need 
 # a) users
 # 

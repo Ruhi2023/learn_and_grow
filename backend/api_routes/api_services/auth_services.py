@@ -1,39 +1,14 @@
-# this file will have all the api utils
-
-import hashlib
-import os
-from re import A
-import traceback
-from dotenv import load_dotenv, find_dotenv
 import jwt
 
-from ..database.database_main import get_db
-from ..database.models import User
+import datetime as dt
+import hashlib
+from math import exp
+import os
+from backend.utils.cred_utils import Credentials_helper
 
-from pathlib import Path
-env_path = Path(__file__).resolve().parent.parent / '.env'
-load_dotenv(dotenv_path=env_path)
-
-
-class Credentials_helper:
-    def __init__(self):
-        pass
-    def get_postgres_connection_string(self):
-        host = os.getenv("POSTGRES_HOST")
-        user = os.getenv("POSTGRES_USER")
-        password = os.getenv("POSTGRES_PASSWD")
-        database = os.getenv("POSTGRES_DB")
-        port=os.getenv("POSTGRES_PORT")
-        self.connection_string = f"postgresql://{user}:{password}@{host}/{database}"
-        print("I am connecting to: ",self.connection_string)
-        return self.connection_string
-    def jwt_cred(self):
-        JWT_SECRTEKEY = os.getenv("JWT_SECR")
-        ALGO_JWT = os.getenv("ALGO_JWT")
-        return JWT_SECRTEKEY, ALGO_JWT
-    
-
-
+from backend.database.models import User
+from backend.database.models import get_db
+import traceback
 class Auth_for_user:
     def __init__(self):
         self.file_haser = hashlib.sha256()
@@ -64,7 +39,8 @@ class Auth_for_user:
         JWT_SECRTEKEY, ALGO_JWT = Credentials_helper().jwt_cred()
         # * to_not_change_the data that comes in the function
         dat_to_encode = data.copy()
-        dat_to_encode.update({"exp":EXPIRE_MINUTES})
+        exp_at = dt.datetime.now(dt.UTC) + dt.timedelta(minutes=EXPIRE_MINUTES)
+        dat_to_encode.update({"exp":exp_at})
         token = jwt.encode(dat_to_encode, JWT_SECRTEKEY, algorithm=ALGO_JWT)
         return token
     
@@ -79,6 +55,7 @@ class Auth_for_user:
             return {"error": "Invalid token"}
         except Exception as e:
             traceback.print_exc()
+            return {"error": str(e)}
 
     def get_user_from_token(self, payload:dict):
         db = get_db()
@@ -87,7 +64,5 @@ class Auth_for_user:
         if not user:
             return {"error": "User not found"}
         return user
-
-
 
 

@@ -1,6 +1,6 @@
 # this file will connect to database
 from sqlalchemy import create_engine
-from ..utils.api_utils import Credentials_helper
+from ..utils.cred_utils import Credentials_helper
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -14,9 +14,3 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()

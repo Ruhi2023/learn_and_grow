@@ -15,3 +15,5 @@ class UserRegisterIn(BaseModel):
     password: str
     class Config:
         orm_mode = True
+class JwtTokenIn(BaseModel):
+    token: str
